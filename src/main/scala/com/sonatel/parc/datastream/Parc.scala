@@ -16,7 +16,7 @@ object Parc {
     Function used to load the Json file and generate the sql request and the regroupement from a parc
    */
   def getRequestAndRegroupement(file : String, dateStart : String) : List[String] = {
-    // Recover started date
+    // get started date
     val spark = CreateSession.spark
     import spark.implicits._
     val dateEnd = Seq(s"$dateStart").toDF("date")
@@ -36,7 +36,7 @@ object Parc {
     //val spark = CreateSession.spark
     val lRule = Functions.getRuleObject(s"$file")
     val parcRule = spark.sparkContext.broadcast(lRule)
-    // Recover the column selected and the wording
+    // get the selected column 
     val colparc = parcRule.value.colparc
     val regroupement = parcRule.value.regroupement
     var andFilter = ""
@@ -51,13 +51,13 @@ object Parc {
       for (level2 <- level1.value) {
         val colSelected = level2.col
         val operator = level2.operator
-        // Verified if the number of values is equal to 1
+        // Verify if the number of values is equal to 1
         var value2 = " "
         if (level2.value.length == 1) {
           val value1 = level2.value(0)
           request = request + colSelected + operator + s"'$value1'" + s" $andFilter "
         }
-        // Recover all values
+        // get all values
         else {
           value2 = value2 + " ("
           for (v <- level2.value) {
